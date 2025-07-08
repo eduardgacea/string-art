@@ -32,3 +32,4 @@ This project provides a simple UI for generating string art from images. Upload 
 - TypeScript
 - Tailwind CSS
 - Vite
+- Shadcn UI
