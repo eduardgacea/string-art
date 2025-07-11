@@ -1,0 +1,8 @@
+// INITIAL CANVAS STATE
+export const DEFAULT_PIN_DISTANCE = 0.5;
+export const DEFAULT_CANVAS_SIZE = 30;
+
+// CANVAS SLIDER
+export const MIN_CANVAS_SIZE = 25;
+export const MAX_CANVAS_SIZE = 65;
+export const CANVAS_DIAMETER_STEP = 5;

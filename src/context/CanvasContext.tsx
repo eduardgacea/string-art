@@ -1,9 +1,10 @@
 import { type CanvasState, type CanvasAction, type CanvasContextValue } from "../types/CanvasContext";
+import { DEFAULT_CANVAS_SIZE, DEFAULT_PIN_DISTANCE } from "@/config/config";
 import { useReducer, createContext } from "react";
 
 const initialState: CanvasState = {
-  pinDistance: 0.5,
-  canvasDiameter: 30,
+  pinDistance: DEFAULT_PIN_DISTANCE,
+  canvasDiameter: DEFAULT_CANVAS_SIZE,
 };
 
 const CanvasContext = createContext<CanvasContextValue>({
@@ -26,8 +27,9 @@ function reducer(prevState: CanvasState, action: CanvasAction): CanvasState {
 function CanvasContextProvider({ children }: { children: React.ReactNode }) {
   const [{ pinDistance, canvasDiameter }, dispatch] = useReducer(reducer, initialState);
 
-  const setPinDistance = (pinDistance: number) => dispatch({ type: "setPinDistance", payload: pinDistance });
-  const setCanvasDiameter = (pinDistance: number) => dispatch({ type: "setCanvasDiameter", payload: pinDistance });
+  const setPinDistance = (pinDistance: number[]) => dispatch({ type: "setPinDistance", payload: pinDistance[0] });
+  const setCanvasDiameter = (canvasDiameter: number[]) =>
+    dispatch({ type: "setCanvasDiameter", payload: canvasDiameter[0] });
 
   return (
     <CanvasContext.Provider value={{ pinDistance, canvasDiameter, setPinDistance, setCanvasDiameter }}>
