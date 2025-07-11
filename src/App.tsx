@@ -1,5 +1,8 @@
+import CanvasControls from "./components/controls/CanvasControls";
+import RootLayout from "./layouts/RootLayout";
+
 function App() {
-  return null;
+  return <RootLayout CanvasControls={CanvasControls} />;
 }
 
 export default App;
