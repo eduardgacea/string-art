@@ -25,7 +25,9 @@ This project provides a simple UI for generating string art from images. Upload 
 
 3. **Open the app:**  
    Visit [http://localhost:5173](http://localhost:5173) in your browser
+
    --- OR ---
+
    For a live version click [here](https://string-art.netlify.app/)
 
 ## Technologies Used
