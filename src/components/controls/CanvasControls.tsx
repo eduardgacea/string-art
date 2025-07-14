@@ -13,14 +13,14 @@ import { useContext } from "react";
 import { Button } from "../ui/button";
 
 type CanvasControlsProps = {
-  className: string;
+  className?: string;
 };
 
 function CanvasControls({ className }: CanvasControlsProps) {
   const canvasContext = useContext(CanvasContext);
 
   return (
-    <Card className={`${className} p-8`}>
+    <Card className={`${className} `}>
       <CardHeader>
         <CardTitle className="text-xl">Simulation params</CardTitle>
       </CardHeader>
@@ -53,7 +53,7 @@ function CanvasControls({ className }: CanvasControlsProps) {
         </div>
         <div className="flex gap-4 justify-end">
           <Button>Generate</Button>
-          <Button variant={"destructive"} onClick={canvasContext.resetParams}>
+          <Button variant={"outline"} onClick={canvasContext.resetParams}>
             Reset
           </Button>
         </div>
