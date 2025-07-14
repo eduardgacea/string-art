@@ -51,11 +51,17 @@ function CanvasControls({ className }: CanvasControlsProps) {
             onValueChange={canvasContext.setPinDistance}
           />
         </div>
-        <div className="flex gap-4 justify-end">
-          <Button>Generate</Button>
-          <Button variant={"outline"} onClick={canvasContext.resetParams}>
-            Reset
-          </Button>
+        <div className="flex gap-4 justify-between items-center">
+          <div>
+            {canvasContext.fileError && <span className="text-destructive">{canvasContext.fileError.message}</span>}
+            {!canvasContext.fileError && canvasContext.file && <span>{canvasContext.file.name}</span>}
+          </div>
+          <div className="flex gap-4">
+            <Button>Generate</Button>
+            <Button variant={"outline"} onClick={canvasContext.resetParams}>
+              Reset
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
