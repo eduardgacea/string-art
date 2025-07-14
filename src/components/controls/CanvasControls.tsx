@@ -7,17 +7,18 @@ import {
   PIN_DISTANCE_STEP,
 } from "@/config/config";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { CanvasContext } from "@/context/CanvasContext";
+import { SimulationContext } from "@/context/SimulationContext";
 import { Slider } from "@/components/ui/slider";
-import { useContext } from "react";
+import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
+import { useContext } from "react";
 
 type CanvasControlsProps = {
   className?: string;
 };
 
 function CanvasControls({ className }: CanvasControlsProps) {
-  const canvasContext = useContext(CanvasContext);
+  const simulationContext = useContext(SimulationContext);
 
   return (
     <Card className={`${className} `}>
@@ -28,37 +29,48 @@ function CanvasControls({ className }: CanvasControlsProps) {
         <div className="flex flex-col gap-4">
           <div className="flex justify-between">
             <div>Canvas diameter</div>
-            <div>{`${canvasContext.canvasDiameter} cm`}</div>
+            <div>{`${simulationContext.canvasDiameter} cm`}</div>
           </div>
           <Slider
             min={MIN_CANVAS_SIZE}
             max={MAX_CANVAS_SIZE}
-            value={[canvasContext.canvasDiameter]}
+            value={[simulationContext.canvasDiameter]}
             step={CANVAS_DIAMETER_STEP}
-            onValueChange={canvasContext.setCanvasDiameter}
+            onValueChange={simulationContext.setCanvasDiameter}
           />
         </div>
         <div className="flex flex-col gap-4">
           <div className="flex justify-between">
             <div>Pin distance</div>
-            <div>{`${canvasContext.pinDistance * 10} mm`}</div>
+            <div>{`${simulationContext.pinDistance * 10} mm`}</div>
           </div>
           <Slider
             min={MIN_PIN_DISTANCE}
             max={MAX_PIN_DISTANCE}
-            value={[canvasContext.pinDistance]}
+            value={[simulationContext.pinDistance]}
             step={PIN_DISTANCE_STEP}
-            onValueChange={canvasContext.setPinDistance}
+            onValueChange={simulationContext.setPinDistance}
           />
+        </div>
+        <div className="flex items-center gap-2">
+          <Checkbox disabled={true} />
+          <div className="flex gap-4">
+            <span className="text-muted-light">Color simulation </span>
+            <span>Coming soon!</span>
+          </div>
         </div>
         <div className="flex gap-4 justify-between items-center">
           <div>
-            {canvasContext.fileError && <span className="text-destructive">{canvasContext.fileError.message}</span>}
-            {!canvasContext.fileError && canvasContext.file && <span>{canvasContext.file.name}</span>}
+            {simulationContext.fileError && (
+              <span className="text-destructive">{simulationContext.fileError.message}</span>
+            )}
+            {!simulationContext.fileError && simulationContext.file && (
+              <span className="font-medium">{simulationContext.file.name}</span>
+            )}
           </div>
           <div className="flex gap-4">
             <Button>Generate</Button>
-            <Button variant={"outline"} onClick={canvasContext.resetParams}>
+            <Button variant={"outline"} onClick={simulationContext.resetParams}>
               Reset
             </Button>
           </div>

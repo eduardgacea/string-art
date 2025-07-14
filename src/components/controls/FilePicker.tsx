@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { CanvasContext } from "@/context/CanvasContext";
+import { SimulationContext } from "@/context/SimulationContext";
 import { ALLOWED_FILE_TYPES } from "@/config/config";
 import { validateFiles } from "@/lib/helpers";
 
@@ -8,15 +8,15 @@ type FilePickerProps = {
 };
 
 function FilePicker({ className }: FilePickerProps) {
-  const canvasContext = useContext(CanvasContext);
+  const simulationContext = useContext(SimulationContext);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
-    if (!canvasContext.file && fileInputRef.current) {
+    if (!simulationContext.file && fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-  }, [canvasContext.file]);
+  }, [simulationContext.file]);
 
   const handleClick = () => {
     fileInputRef?.current?.click();
@@ -24,14 +24,14 @@ function FilePicker({ className }: FilePickerProps) {
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    validateFiles(canvasContext, files);
+    validateFiles(simulationContext, files);
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const files = e.dataTransfer.files;
     setIsDragging(false);
-    validateFiles(canvasContext, files);
+    validateFiles(simulationContext, files);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {

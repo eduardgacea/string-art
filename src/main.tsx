@@ -1,4 +1,4 @@
-import { CanvasContextProvider } from "./context/CanvasContext.tsx";
+import { SimulationContextProvider } from "./context/SimulationContext.tsx";
 import { createRoot } from "react-dom/client";
 import { StrictMode } from "react";
 
@@ -8,8 +8,8 @@ import "./index.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <CanvasContextProvider>
+    <SimulationContextProvider>
       <App />
-    </CanvasContextProvider>
+    </SimulationContextProvider>
   </StrictMode>
 );
