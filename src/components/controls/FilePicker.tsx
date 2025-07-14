@@ -1,5 +1,5 @@
+import { useContext, useEffect, useRef, useState } from "react";
 import { CanvasContext } from "@/context/CanvasContext";
-import { useContext, useRef, useState } from "react";
 import { ALLOWED_FILE_TYPES } from "@/config/config";
 import { validateFiles } from "@/lib/helpers";
 
@@ -11,6 +11,12 @@ function FilePicker({ className }: FilePickerProps) {
   const canvasContext = useContext(CanvasContext);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    if (!canvasContext.file && fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }, [canvasContext.file]);
 
   const handleClick = () => {
     fileInputRef?.current?.click();
