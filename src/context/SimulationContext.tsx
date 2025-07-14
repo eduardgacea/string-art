@@ -1,4 +1,4 @@
-import { type SimulationState, type SimulationAction, type SimulationStateValue } from "../types/CanvasContext";
+import { type SimulationState, type SimulationAction, type SimulationContextValue } from "../types/SimulationContext";
 import { DEFAULT_CANVAS_SIZE, DEFAULT_PIN_DISTANCE } from "@/config/config";
 import { useReducer, createContext } from "react";
 
@@ -10,7 +10,7 @@ const initialState: SimulationState = {
   isColorSimulation: false,
 };
 
-const SimulationContext = createContext<SimulationStateValue>({
+const SimulationContext = createContext<SimulationContextValue>({
   ...initialState,
   setPinDistance: () => {},
   setCanvasDiameter: () => {},

@@ -1,7 +1,7 @@
-import { type CanvasContextValue } from "@/types/CanvasContext";
+import { type SimulationContextValue } from "@/types/SimulationContext";
 import { ALLOWED_FILE_TYPES } from "@/config/config";
 
-export function validateFiles(canvasContext: CanvasContextValue, files: FileList | null) {
+export function validateFiles(canvasContext: SimulationContextValue, files: FileList | null) {
   try {
     if (!files) throw new Error("No files selected");
     if (files.length > 1) throw new Error("Multiple files selected");

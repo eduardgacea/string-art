@@ -6,7 +6,6 @@ function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    console.log("use effect ran");
     const file = simulationContext.file;
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;

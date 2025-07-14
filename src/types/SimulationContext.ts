@@ -14,7 +14,7 @@ export type SimulationAction =
   | { type: "setIsColorSimulation"; payload: boolean }
   | { type: "resetParams" };
 
-export type SimulationStateValue = SimulationState & {
+export type SimulationContextValue = SimulationState & {
   setPinDistance: (pinDistance: number[]) => void;
   setCanvasDiameter: (canvasDiameter: number[]) => void;
   setFile: (file: File) => void;
