@@ -59,7 +59,7 @@ function CanvasControls({ className }: CanvasControlsProps) {
             <span>Coming soon!</span>
           </div>
         </div>
-        <div className="flex gap-4 justify-between items-center">
+        <div className="flex flex-wrap gap-4 justify-between items-center">
           <div>
             {simulationContext.fileError && (
               <span className="text-destructive">{simulationContext.fileError.message}</span>
