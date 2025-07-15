@@ -1,8 +1,8 @@
 import { SimulationContext } from "@/context/SimulationContext";
 import { useState, useContext, useEffect, useRef } from "react";
+import { BRUSH_SIZE_STEP } from "@/config/config";
 import { type Vector2 } from "../../types/Canvas";
 import { initCanvas } from "@/lib/helpers";
-import { BRUSH_SIZE_STEP } from "@/config/config";
 
 const PI = Math.PI;
 
@@ -50,12 +50,9 @@ function Canvas() {
     if (!result) return;
     const { canvas: srcCanvas, ctx: srcCtx } = result;
     const img = imageRef.current;
-
     if (!img) return;
-
     srcCtx.clearRect(0, 0, srcCanvas.width, srcCanvas.height);
     srcCtx.drawImage(img, 0, 0);
-
     srcCtx.beginPath();
     srcCtx.arc(mousePos.x, mousePos.y, brushSize, 0, 2 * PI);
     srcCtx.strokeStyle = "red";
@@ -63,10 +60,35 @@ function Canvas() {
     srcCtx.stroke();
   }, [mousePos, brushSize]);
 
+  useEffect(() => {
+    const canvas = srcCanvasRef.current;
+    if (!canvas) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+
+      setBrushSize((prev) => {
+        const newBrushSize = e.deltaY < 0 ? prev + BRUSH_SIZE_STEP : prev - BRUSH_SIZE_STEP;
+        return Math.max(0, newBrushSize);
+      });
+    };
+
+    canvas.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      canvas.removeEventListener("wheel", handleWheel);
+    };
+  }, []);
+
   const onMouseMove = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+    const canvas = e.currentTarget;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
     setMousePos({
-      x: e.nativeEvent.offsetX,
-      y: e.nativeEvent.offsetY,
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY,
     });
   };
 
@@ -77,20 +99,12 @@ function Canvas() {
     });
   };
 
-  const onMouseWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
-    setBrushSize((prev) => {
-      const newBrushSize = e.deltaY < 0 ? prev + BRUSH_SIZE_STEP : prev - BRUSH_SIZE_STEP;
-      return Math.max(0, newBrushSize);
-    });
-  };
-
   return (
     <>
       <canvas
         ref={srcCanvasRef}
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
-        onWheel={onMouseWheel}
         className="max-w-[100%] self-start md:max-w-[90%] 2xl:max-w-[75%]"
       ></canvas>
       <canvas ref={dstCanvasRef} className="hidden"></canvas>
