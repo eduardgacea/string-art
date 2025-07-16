@@ -1,84 +1,17 @@
-import { SimulationContext } from "@/context/SimulationContext";
-import { useState, useContext, useEffect, useRef } from "react";
-import { BRUSH_SIZE_STEP } from "@/config/config";
-import { type Vector2 } from "../../types/Canvas";
-import { initCanvas } from "@/lib/helpers";
-
-const PI = Math.PI;
+import { useLoadImageToCanvas } from "@/hooks/canvas/useLoadImageToCanvas";
+import { useOnWheel } from "@/hooks/canvas/useOnWheel";
+import { useBrush } from "@/hooks/canvas/useBrush";
+import { MAX_BRUSH_SIZE } from "@/config/config";
+import { useRef } from "react";
 
 function Canvas() {
-  const simulationContext = useContext(SimulationContext);
-
   const srcCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const dstCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
 
-  const [mousePos, setMousePos] = useState<Vector2>({ x: 0, y: 0 });
-  const [brushSize, setBrushSize] = useState(32);
-
-  useEffect(() => {
-    const file = simulationContext.file;
-    const result = initCanvas(srcCanvasRef);
-    if (!result) return;
-    const { canvas: srcCanvas, ctx: srcCtx } = result;
-
-    if (!file) {
-      srcCtx.clearRect(0, 0, srcCanvas.width, srcCanvas.height);
-      srcCanvas.width = 0;
-      srcCanvas.height = 0;
-      imageRef.current = null;
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        srcCanvas.width = img.width;
-        srcCanvas.height = img.height;
-        srcCtx.drawImage(img, 0, 0);
-        imageRef.current = img;
-      };
-      img.src = e.target?.result as string;
-    };
-
-    reader.readAsDataURL(file);
-  }, [simulationContext.file]);
-
-  useEffect(() => {
-    const result = initCanvas(srcCanvasRef);
-    if (!result) return;
-    const { canvas: srcCanvas, ctx: srcCtx } = result;
-    const img = imageRef.current;
-    if (!img) return;
-    srcCtx.clearRect(0, 0, srcCanvas.width, srcCanvas.height);
-    srcCtx.drawImage(img, 0, 0);
-    srcCtx.beginPath();
-    srcCtx.arc(mousePos.x, mousePos.y, brushSize, 0, 2 * PI);
-    srcCtx.strokeStyle = "red";
-    srcCtx.lineWidth = 2;
-    srcCtx.stroke();
-  }, [mousePos, brushSize]);
-
-  useEffect(() => {
-    const canvas = srcCanvasRef.current;
-    if (!canvas) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
-
-      setBrushSize((prev) => {
-        const newBrushSize = e.deltaY < 0 ? prev + BRUSH_SIZE_STEP : prev - BRUSH_SIZE_STEP;
-        return Math.max(0, newBrushSize);
-      });
-    };
-
-    canvas.addEventListener("wheel", handleWheel, { passive: false });
-
-    return () => {
-      canvas.removeEventListener("wheel", handleWheel);
-    };
-  }, []);
+  const { setMousePos, incrementBrush } = useBrush(srcCanvasRef, imageRef);
+  useOnWheel(srcCanvasRef, incrementBrush);
+  useLoadImageToCanvas(srcCanvasRef, imageRef);
 
   const onMouseMove = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
     const canvas = e.currentTarget;
@@ -94,8 +27,8 @@ function Canvas() {
 
   const onMouseLeave = () => {
     setMousePos({
-      x: -brushSize * 2,
-      y: -brushSize * 2,
+      x: -MAX_BRUSH_SIZE * 2,
+      y: -MAX_BRUSH_SIZE * 2,
     });
   };
 
