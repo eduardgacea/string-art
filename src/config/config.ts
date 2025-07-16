@@ -16,4 +16,6 @@ export const PIN_DISTANCE_STEP = 0.1;
 export const ALLOWED_FILE_TYPES = ["jpg", "jpeg", "png", "webp"];
 
 // BRUSH
+export const DEFAULT_BRUSH_SIZE = 32;
 export const BRUSH_SIZE_STEP = 8;
+export const MAX_BRUSH_SIZE = 512;
