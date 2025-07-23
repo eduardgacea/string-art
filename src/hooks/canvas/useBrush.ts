@@ -11,8 +11,10 @@ export function useBrush(
   const brushSizeRef = useRef(DEFAULT_BRUSH_SIZE);
   const overlayAlphaRef = useRef(0);
   const animationFrame = useRef<number | null>(null);
+  const brushEnabledRef = useRef(true);
 
   const draw = useCallback(() => {
+    if (!brushEnabledRef.current) return;
     const result = initCanvas(canvasRef);
     if (!result) return;
     const { canvas, ctx } = result;
@@ -52,9 +54,11 @@ export function useBrush(
 
   const setMousePos = useCallback(
     (pos: Vector2) => {
+      if (!brushEnabledRef.current) return;
       mousePosRef.current = pos;
       draw();
     },
+
     [draw]
   );
 
@@ -69,6 +73,7 @@ export function useBrush(
 
   const fadeToAlpha = useCallback(
     (target: number) => {
+      if (!brushEnabledRef.current) return;
       if (animationFrame.current) cancelAnimationFrame(animationFrame.current);
 
       const animate = () => {
@@ -92,5 +97,36 @@ export function useBrush(
     [draw]
   );
 
-  return { setMousePos, incrementBrush, fadeToAlpha };
+  const clipCurrentBrushArea = useCallback(() => {
+    const result = initCanvas(canvasRef);
+    if (!result) return;
+    const { canvas, ctx } = result;
+    const img = imageRef.current;
+    if (!img) return;
+
+    const { x, y } = mousePosRef.current;
+    const radius = brushSizeRef.current;
+    const size = radius * 2;
+
+    const offCanvas = document.createElement("canvas");
+    offCanvas.width = size;
+    offCanvas.height = size;
+    const offCtx = offCanvas.getContext("2d");
+    if (!offCtx) return;
+
+    offCtx.beginPath();
+    offCtx.arc(radius, radius, radius, 0, 2 * Math.PI);
+    offCtx.clip();
+
+    offCtx.drawImage(img, x - radius, y - radius, size, size, 0, 0, size, size);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(offCanvas, (canvas.width - size) / 2, (canvas.height - size) / 2);
+
+    brushEnabledRef.current = false;
+    overlayAlphaRef.current = 0;
+    draw();
+  }, [canvasRef, imageRef, draw]);
+
+  return { setMousePos, incrementBrush, fadeToAlpha, clipCurrentBrushArea };
 }
