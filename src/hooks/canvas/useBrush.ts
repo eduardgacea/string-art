@@ -19,9 +19,31 @@ export function useBrush(
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0);
+
+    // Overlay
+    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Erase brush hole
+    ctx.save();
+    ctx.globalCompositeOperation = "destination-out";
     ctx.beginPath();
     ctx.arc(mousePosRef.current.x, mousePosRef.current.y, brushSizeRef.current, 0, 2 * Math.PI);
-    ctx.strokeStyle = "red";
+    ctx.fill();
+    ctx.restore();
+
+    // Redraw image
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(mousePosRef.current.x, mousePosRef.current.y, brushSizeRef.current, 0, 2 * Math.PI);
+    ctx.clip();
+    ctx.drawImage(img, 0, 0);
+    ctx.restore();
+
+    // Brush border
+    ctx.beginPath();
+    ctx.arc(mousePosRef.current.x, mousePosRef.current.y, brushSizeRef.current, 0, 2 * Math.PI);
+    ctx.strokeStyle = "oklch(0.645 0.246 16.439)";
     ctx.lineWidth = 2;
     ctx.stroke();
   }, [canvasRef, imageRef]);
