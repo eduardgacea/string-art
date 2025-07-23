@@ -9,7 +9,7 @@ function Canvas() {
   const dstCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
 
-  const { setMousePos, incrementBrush } = useBrush(srcCanvasRef, imageRef);
+  const { setMousePos, incrementBrush, fadeToAlpha } = useBrush(srcCanvasRef, imageRef);
   useOnWheel(srcCanvasRef, incrementBrush);
   useLoadImageToCanvas(srcCanvasRef, imageRef);
 
@@ -30,6 +30,11 @@ function Canvas() {
       x: -MAX_BRUSH_SIZE * 2,
       y: -MAX_BRUSH_SIZE * 2,
     });
+    fadeToAlpha(0);
+  };
+
+  const onMouseEnter = () => {
+    fadeToAlpha(0.5);
   };
 
   return (
@@ -38,6 +43,7 @@ function Canvas() {
         ref={srcCanvasRef}
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
+        onMouseEnter={onMouseEnter}
         className="max-w-[100%] self-start md:max-w-[90%] 2xl:max-w-[75%]"
       ></canvas>
       <canvas ref={dstCanvasRef} className="hidden"></canvas>

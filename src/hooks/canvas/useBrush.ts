@@ -9,6 +9,8 @@ export function useBrush(
 ) {
   const mousePosRef = useRef<Vector2>({ x: 0, y: 0 });
   const brushSizeRef = useRef(DEFAULT_BRUSH_SIZE);
+  const overlayAlphaRef = useRef(0);
+  const animationFrame = useRef<number | null>(null);
 
   const draw = useCallback(() => {
     const result = initCanvas(canvasRef);
@@ -20,11 +22,11 @@ export function useBrush(
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0);
 
-    // Overlay
-    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+    // Overlay dim with animated alpha
+    ctx.fillStyle = `rgba(0, 0, 0, ${overlayAlphaRef.current})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Erase brush hole
+    // Brush hole
     ctx.save();
     ctx.globalCompositeOperation = "destination-out";
     ctx.beginPath();
@@ -32,7 +34,7 @@ export function useBrush(
     ctx.fill();
     ctx.restore();
 
-    // Redraw image
+    // Re-render clear image in hole
     ctx.save();
     ctx.beginPath();
     ctx.arc(mousePosRef.current.x, mousePosRef.current.y, brushSizeRef.current, 0, 2 * Math.PI);
@@ -40,7 +42,7 @@ export function useBrush(
     ctx.drawImage(img, 0, 0);
     ctx.restore();
 
-    // Brush border
+    // Brush stroke
     ctx.beginPath();
     ctx.arc(mousePosRef.current.x, mousePosRef.current.y, brushSizeRef.current, 0, 2 * Math.PI);
     ctx.strokeStyle = "oklch(0.645 0.246 16.439)";
@@ -65,5 +67,30 @@ export function useBrush(
     [draw]
   );
 
-  return { setMousePos, incrementBrush };
+  const fadeToAlpha = useCallback(
+    (target: number) => {
+      if (animationFrame.current) cancelAnimationFrame(animationFrame.current);
+
+      const animate = () => {
+        const alpha = overlayAlphaRef.current;
+        const delta = 0.01;
+
+        if (Math.abs(target - alpha) < delta) {
+          overlayAlphaRef.current = target;
+          draw();
+          return;
+        }
+
+        overlayAlphaRef.current += alpha < target ? delta : -delta;
+        overlayAlphaRef.current = Math.min(Math.max(overlayAlphaRef.current, 0), 1);
+        draw();
+        animationFrame.current = requestAnimationFrame(animate);
+      };
+
+      animate();
+    },
+    [draw]
+  );
+
+  return { setMousePos, incrementBrush, fadeToAlpha };
 }
