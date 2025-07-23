@@ -10,7 +10,7 @@ export function useOnWheel(
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      const increment = e.deltaY < 0 ? -1 : 1;
+      const increment = e.deltaY < 0 ? 1 : -1;
       incrementBrush(increment);
     };
 

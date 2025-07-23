@@ -6,6 +6,16 @@ import {
   MIN_PIN_DISTANCE,
   PIN_DISTANCE_STEP,
 } from "@/config/config";
+import {
+  Dialog,
+  DialogClose,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogContent,
+} from "../ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { SimulationContext } from "@/context/SimulationContext";
 import { Slider } from "@/components/ui/slider";
@@ -70,9 +80,25 @@ function CanvasControls({ className }: CanvasControlsProps) {
           </div>
           <div className="flex gap-4">
             <Button>Generate</Button>
-            <Button variant={"outline"} onClick={simulationContext.resetParams}>
-              Reset
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline">Reset</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you sure you want to reset params?</DialogTitle>
+                  <DialogDescription>This action can not be undone</DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="gap-4">
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <DialogClose asChild>
+                    <Button onClick={simulationContext.resetParams}>Reset</Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </CardContent>
