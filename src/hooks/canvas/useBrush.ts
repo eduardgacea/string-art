@@ -1,17 +1,23 @@
 import { BRUSH_SIZE_STEP, DEFAULT_BRUSH_SIZE } from "@/config/config";
+import { useRef, useCallback, useContext, useEffect } from "react";
+import { SimulationContext } from "@/context/SimulationContext";
 import type { Vector2 } from "@/types/Canvas";
-import { useRef, useCallback } from "react";
 import { initCanvas } from "@/lib/helpers";
 
 export function useBrush(
   canvasRef: React.RefObject<HTMLCanvasElement | null>,
   imageRef: React.RefObject<HTMLImageElement | null>
 ) {
+  const simulationContext = useContext(SimulationContext);
   const mousePosRef = useRef<Vector2>({ x: 0, y: 0 });
   const brushSizeRef = useRef(DEFAULT_BRUSH_SIZE);
   const overlayAlphaRef = useRef(0);
   const animationFrame = useRef<number | null>(null);
-  const brushEnabledRef = useRef(true);
+  const brushEnabledRef = useRef(simulationContext.isBrushedEnabled);
+
+  useEffect(() => {
+    brushEnabledRef.current = simulationContext.isBrushedEnabled;
+  }, [simulationContext.isBrushedEnabled]);
 
   const draw = useCallback(() => {
     if (!brushEnabledRef.current) return;
@@ -108,25 +114,29 @@ export function useBrush(
     const radius = brushSizeRef.current;
     const size = radius * 2;
 
+    // 1. Create circular clipped version on offscreen canvas
     const offCanvas = document.createElement("canvas");
     offCanvas.width = size;
     offCanvas.height = size;
     const offCtx = offCanvas.getContext("2d");
     if (!offCtx) return;
 
+    // Draw only the circular part of image
+    offCtx.save();
     offCtx.beginPath();
     offCtx.arc(radius, radius, radius, 0, 2 * Math.PI);
     offCtx.clip();
-
     offCtx.drawImage(img, x - radius, y - radius, size, size, 0, 0, size, size);
+    offCtx.restore();
 
+    // 2. Clear original canvas and draw the cropped circle centered
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(offCanvas, (canvas.width - size) / 2, (canvas.height - size) / 2);
 
-    brushEnabledRef.current = false;
+    // 3. Disable brush + overlay
+    simulationContext.setIsBrushEnabled(false);
     overlayAlphaRef.current = 0;
-    draw();
-  }, [canvasRef, imageRef, draw]);
+  }, [canvasRef, imageRef, simulationContext]);
 
   return { setMousePos, incrementBrush, fadeToAlpha, clipCurrentBrushArea };
 }

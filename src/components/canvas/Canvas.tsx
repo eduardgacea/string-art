@@ -1,10 +1,12 @@
 import { useLoadImageToCanvas } from "@/hooks/canvas/useLoadImageToCanvas";
+import { SimulationContext } from "@/context/SimulationContext";
 import { useOnWheel } from "@/hooks/canvas/useOnWheel";
 import { useBrush } from "@/hooks/canvas/useBrush";
 import { MAX_BRUSH_SIZE } from "@/config/config";
-import { useRef } from "react";
+import { useContext, useRef } from "react";
 
 function Canvas() {
+  const simulationContext = useContext(SimulationContext);
   const srcCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const dstCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
@@ -38,6 +40,7 @@ function Canvas() {
   };
 
   const onClick = () => {
+    if (!simulationContext.isBrushedEnabled) return;
     clipCurrentBrushArea();
   };
 

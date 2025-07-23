@@ -1,6 +1,6 @@
 import { type SimulationState, type SimulationAction, type SimulationContextValue } from "../types/SimulationContext";
 import { DEFAULT_CANVAS_SIZE, DEFAULT_PIN_DISTANCE } from "@/config/config";
-import { useReducer, createContext } from "react";
+import { useReducer, createContext, useCallback } from "react";
 
 const initialState: SimulationState = {
   pinDistance: DEFAULT_PIN_DISTANCE,
@@ -8,6 +8,7 @@ const initialState: SimulationState = {
   file: null,
   fileError: null,
   isColorSimulation: false,
+  isBrushedEnabled: true,
 };
 
 const SimulationContext = createContext<SimulationContextValue>({
@@ -17,6 +18,7 @@ const SimulationContext = createContext<SimulationContextValue>({
   setFile: () => {},
   setFileError: () => {},
   setIsColorSimulation: () => {},
+  setIsBrushEnabled: () => {},
   resetParams: () => {},
 });
 
@@ -32,6 +34,8 @@ function reducer(prevState: SimulationState, action: SimulationAction): Simulati
       return { ...prevState, fileError: action.payload, file: null };
     case "setIsColorSimulation":
       return { ...prevState, isColorSimulation: action.payload };
+    case "setIsBrushEnabled":
+      return { ...prevState, isBrushedEnabled: action.payload };
     case "resetParams":
       return initialState;
     default:
@@ -40,7 +44,7 @@ function reducer(prevState: SimulationState, action: SimulationAction): Simulati
 }
 
 function SimulationContextProvider({ children }: { children: React.ReactNode }) {
-  const [{ pinDistance, canvasDiameter, file, fileError, isColorSimulation }, dispatch] = useReducer(
+  const [{ pinDistance, canvasDiameter, file, fileError, isColorSimulation, isBrushedEnabled }, dispatch] = useReducer(
     reducer,
     initialState
   );
@@ -50,7 +54,11 @@ function SimulationContextProvider({ children }: { children: React.ReactNode }) 
     dispatch({ type: "setCanvasDiameter", payload: canvasDiameter[0] });
   const setFile = (file: File) => dispatch({ type: "setFile", payload: file });
   const setFileError = (error: Error) => dispatch({ type: "setFileError", payload: error });
-  const setIsColorSimulation = (preference: boolean) => dispatch({ type: "setIsColorSimulation", payload: preference });
+  const setIsColorSimulation = (isColorSimulation: boolean) =>
+    dispatch({ type: "setIsColorSimulation", payload: isColorSimulation });
+  const setIsBrushEnabled = useCallback((isBrushedEnabled: boolean) => {
+    dispatch({ type: "setIsBrushEnabled", payload: isBrushedEnabled });
+  }, []);
   const resetParams = () => dispatch({ type: "resetParams" });
 
   return (
@@ -61,11 +69,13 @@ function SimulationContextProvider({ children }: { children: React.ReactNode }) 
         file,
         fileError,
         isColorSimulation,
+        isBrushedEnabled,
         setPinDistance,
         setCanvasDiameter,
         setFile,
         setFileError,
         setIsColorSimulation,
+        setIsBrushEnabled,
         resetParams,
       }}
     >

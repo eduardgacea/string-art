@@ -25,6 +25,7 @@ function FilePicker({ className }: FilePickerProps) {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     validateFiles(simulationContext, files);
+    simulationContext.setIsBrushEnabled(true);
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -32,6 +33,7 @@ function FilePicker({ className }: FilePickerProps) {
     const files = e.dataTransfer.files;
     setIsDragging(false);
     validateFiles(simulationContext, files);
+    simulationContext.setIsBrushEnabled(true);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {

@@ -4,6 +4,7 @@ export type SimulationState = {
   file: File | null;
   fileError: Error | null;
   isColorSimulation: boolean;
+  isBrushedEnabled: boolean;
 };
 
 export type SimulationAction =
@@ -12,6 +13,7 @@ export type SimulationAction =
   | { type: "setFile"; payload: File }
   | { type: "setFileError"; payload: Error }
   | { type: "setIsColorSimulation"; payload: boolean }
+  | { type: "setIsBrushEnabled"; payload: boolean }
   | { type: "resetParams" };
 
 export type SimulationContextValue = SimulationState & {
@@ -19,6 +21,7 @@ export type SimulationContextValue = SimulationState & {
   setCanvasDiameter: (canvasDiameter: number[]) => void;
   setFile: (file: File) => void;
   setFileError: (error: Error) => void;
-  setIsColorSimulation: (preference: boolean) => void;
+  setIsColorSimulation: (isColorSimulation: boolean) => void;
+  setIsBrushEnabled: (isBrushEnabled: boolean) => void;
   resetParams: () => void;
 };
